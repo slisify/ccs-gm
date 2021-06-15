@@ -5,9 +5,10 @@
 package tls_test
 
 import (
-	"github.com/Hyperledger-TWGC/ccs-gm/tls"
-	"github.com/Hyperledger-TWGC/ccs-gm/x509"
 	"log"
+
+	"github.com/slisify/ccs-gm/tls"
+	"github.com/slisify/ccs-gm/x509"
 )
 
 // zeroSource is an io.Reader that returns an unlimited number of zero bytes.

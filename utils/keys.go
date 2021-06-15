@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Hyperledger-TWGC/ccs-gm/sm2"
-	"github.com/Hyperledger-TWGC/ccs-gm/x509"
+	"github.com/slisify/ccs-gm/sm2"
+	"github.com/slisify/ccs-gm/x509"
 )
 
 var (
@@ -137,7 +137,7 @@ func PEMtoPrivateKey(raw []byte, pwd []byte) (*sm2.PrivateKey, error) {
 		return nil, fmt.Errorf("failed decoding PEM. Block must be different from nil. [% x]", raw)
 	}
 
-	if x509.IsEncryptedPEMBlock(block) || block.Type == "ENCRYPTED PRIVATE KEY"{
+	if x509.IsEncryptedPEMBlock(block) || block.Type == "ENCRYPTED PRIVATE KEY" {
 		if len(pwd) == 0 {
 			return nil, errors.New("encrypted Key. Need a password")
 		}

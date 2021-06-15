@@ -14,7 +14,7 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/Hyperledger-TWGC/ccs-gm/sm3"
+	"github.com/slisify/ccs-gm/sm3"
 )
 
 var EncryptionErr = errors.New("sm2: encryption error")
@@ -222,26 +222,26 @@ func pointFromBytes(buf []byte) (x, y *big.Int) {
 	return
 }
 
-func EncryptAsn1(rand io.Reader, key *PublicKey, msg []byte) (cipher []byte,err error) {
+func EncryptAsn1(rand io.Reader, key *PublicKey, msg []byte) (cipher []byte, err error) {
 	x, y, c2, c3, err := doEncrypt(rand, key, msg)
 	if err != nil {
 		return nil, err
 	}
 
-	var C = sm2Cipher{x,y,c3,c2}
+	var C = sm2Cipher{x, y, c3, c2}
 
 	return asn1.Marshal(C)
 }
 
-func DecryptAsn1(priv *PrivateKey,cipher []byte) (plaintext []byte,err error) {
+func DecryptAsn1(priv *PrivateKey, cipher []byte) (plaintext []byte, err error) {
 	var C sm2Cipher
 
-	_, err = asn1.Unmarshal(cipher,&C)
+	_, err = asn1.Unmarshal(cipher, &C)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
-	x1, y1 := C.XCoordinate,C.YCoordinate
+	x1, y1 := C.XCoordinate, C.YCoordinate
 
 	//dB*C1
 	x2, y2 := priv.Curve.ScalarMult(x1, y1, priv.D.Bytes())

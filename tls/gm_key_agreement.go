@@ -10,10 +10,11 @@ import (
 	"crypto/elliptic"
 	"encoding/asn1"
 	"errors"
-	"github.com/Hyperledger-TWGC/ccs-gm/sm2"
-	"github.com/Hyperledger-TWGC/ccs-gm/x509"
 	"io"
 	"math/big"
+
+	"github.com/slisify/ccs-gm/sm2"
+	"github.com/slisify/ccs-gm/x509"
 
 	"golang.org/x/crypto/curve25519"
 )

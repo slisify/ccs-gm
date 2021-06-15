@@ -3,8 +3,9 @@ package utils
 import (
 	"bytes"
 	"crypto/rand"
-	"github.com/Hyperledger-TWGC/ccs-gm/sm2"
 	"testing"
+
+	"github.com/slisify/ccs-gm/sm2"
 )
 
 func TestPEM2Key(t *testing.T) {

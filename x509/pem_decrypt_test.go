@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/base64"
-	"github.com/Hyperledger-TWGC/ccs-gm/sm2"
 	"testing"
+
+	"github.com/slisify/ccs-gm/sm2"
 )
 
 func TestEncAndDecPem(t *testing.T) {

@@ -12,7 +12,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/Hyperledger-TWGC/ccs-gm/sm3"
+	"github.com/slisify/ccs-gm/sm3"
 )
 
 func TestKeyGen(t *testing.T) {
