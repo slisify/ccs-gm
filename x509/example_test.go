@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package x509
+package x509_test
 
 import (
 	"crypto/dsa"
 	"crypto/ecdsa"
+	"crypto/ed25519"
 	"crypto/rsa"
-	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+
+	"crypto/x509"
 )
 
 func ExampleCertificate_Verify() {
@@ -128,6 +130,8 @@ AIU+2GKjyT3iMuzZxxFxPFMCAwEAAQ==
 		fmt.Println("pub is of type DSA:", pub)
 	case *ecdsa.PublicKey:
 		fmt.Println("pub is of type ECDSA:", pub)
+	case ed25519.PublicKey:
+		fmt.Println("pub is of type Ed25519:", pub)
 	default:
 		panic("unknown type of public key")
 	}

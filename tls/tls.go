@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package tls partially implements TLS 1.2, as specified in RFC 5246.
+// Package tls partially implements TLS 1.2, as specified in RFC 5246,
+// and TLS 1.3, as specified in RFC 8446.
 package tls
 
 // BUG(agl): The crypto/tls package only implements some countermeasures
@@ -11,8 +12,10 @@ package tls
 // https://www.imperialviolet.org/2013/02/04/luckythirteen.html.
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/ecdsa"
+	"crypto/ed25519"
 	"crypto/rsa"
 	"encoding/pem"
 	"errors"
@@ -22,7 +25,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/slisify/ccs-gm/sm2"
 	"github.com/slisify/ccs-gm/x509"
 )
 
@@ -74,8 +76,9 @@ func NewListener(inner net.Listener, config *Config) net.Listener {
 // The configuration config must be non-nil and must include
 // at least one certificate or else set GetCertificate.
 func Listen(network, laddr string, config *Config) (net.Listener, error) {
-	if config == nil || (len(config.Certificates) == 0 && config.GetCertificate == nil) {
-		return nil, errors.New("tls: neither Certificates nor GetCertificate set in Config")
+	if config == nil || len(config.Certificates) == 0 &&
+		config.GetCertificate == nil && config.GetConfigForClient == nil {
+		return nil, errors.New("tls: neither Certificates, GetCertificate, nor GetConfigForClient set in Config")
 	}
 	l, err := net.Listen(network, laddr)
 	if err != nil {
@@ -114,9 +117,10 @@ func DialWithDialer(dialer *net.Dialer, network, addr string, config *Config) (*
 
 	if timeout != 0 {
 		errChannel = make(chan error, 2)
-		time.AfterFunc(timeout, func() {
+		timer := time.AfterFunc(timeout, func() {
 			errChannel <- timeoutError{}
 		})
+		defer timer.Stop()
 	}
 
 	rawConn, err := dialer.Dial(network, addr)
@@ -263,18 +267,18 @@ func X509KeyPair(certPEMBlock, keyPEMBlock []byte) (Certificate, error) {
 	case *ecdsa.PublicKey:
 		priv, ok := cert.PrivateKey.(*ecdsa.PrivateKey)
 		if !ok {
-			return fail(errors.New("tls: ecdsa private key type does not match public key type"))
+			return fail(errors.New("tls: private key type does not match public key type"))
 		}
 		if pub.X.Cmp(priv.X) != 0 || pub.Y.Cmp(priv.Y) != 0 {
-			return fail(errors.New("tls: ecdsa private key does not match public key"))
+			return fail(errors.New("tls: private key does not match public key"))
 		}
-	case *sm2.PublicKey:
-		priv, ok := cert.PrivateKey.(*sm2.PrivateKey)
+	case ed25519.PublicKey:
+		priv, ok := cert.PrivateKey.(ed25519.PrivateKey)
 		if !ok {
-			return fail(errors.New("tls: sm2 private key type does not match public key type"))
+			return fail(errors.New("tls: private key type does not match public key type"))
 		}
-		if pub.X.Cmp(priv.X) != 0 || pub.Y.Cmp(priv.Y) != 0 {
-			return fail(errors.New("tls: sm2 private key does not match public key"))
+		if !bytes.Equal(priv.Public().(ed25519.PublicKey), pub) {
+			return fail(errors.New("tls: private key does not match public key"))
 		}
 	default:
 		return fail(errors.New("tls: unknown public key algorithm"))
@@ -292,7 +296,7 @@ func parsePrivateKey(der []byte) (crypto.PrivateKey, error) {
 	}
 	if key, err := x509.ParsePKCS8PrivateKey(der); err == nil {
 		switch key := key.(type) {
-		case *rsa.PrivateKey, *ecdsa.PrivateKey, *sm2.PrivateKey:
+		case *rsa.PrivateKey, *ecdsa.PrivateKey, ed25519.PrivateKey:
 			return key, nil
 		default:
 			return nil, errors.New("tls: found unknown private key type in PKCS#8 wrapping")
