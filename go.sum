@@ -1,5 +1,3 @@
-github.com/Hyperledger-TWGC/ccs-gm v0.1.1 h1:tQoqOqo2lkLm4fWVEdAopFZCf/jvvQYi/bXjm6c9Z8c=
-github.com/Hyperledger-TWGC/ccs-gm v0.1.1/go.mod h1:NYt3Izjky1wLk/1peAiE6N8dSlvrPhtk8HiNCqzIRPU=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 h1:DZhuSZLsGlFL4CmhA8BcRA0mnthyA/nZ00AqCUo7vHg=
 golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=

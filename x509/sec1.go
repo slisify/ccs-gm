@@ -11,9 +11,8 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
-	"reflect"
 
-	"github.com/slisify-TWGC/ccs-gm/sm2"
+	"github.com/slisify/ccs-gm/sm2"
 )
 
 const ecPrivKeyVersion = 1
@@ -136,13 +135,13 @@ func parseECPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *e
 		if k.Cmp(curveOrder) >= 0 {
 			return nil, errors.New("x509: invalid elliptic curve private key value")
 		}
-	
+
 		priv := new(ecdsa.PrivateKey)
 		priv.Curve = curve
 		priv.D = k
-	
+
 		privateKey := make([]byte, (curveOrder.BitLen()+7)/8)
-	
+
 		// Some private keys have leading zero padding. This is invalid
 		// according to [SEC1], but this code will ignore it.
 		for len(privKey.PrivateKey) > len(privateKey) {
@@ -151,13 +150,13 @@ func parseECPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *e
 			}
 			privKey.PrivateKey = privKey.PrivateKey[1:]
 		}
-	
+
 		// Some private keys remove all leading zeros, this is also invalid
 		// according to [SEC1] but since OpenSSL used to do this, we ignore
 		// this too.
 		copy(privateKey[len(privateKey)-len(privKey.PrivateKey):], privKey.PrivateKey)
 		priv.X, priv.Y = curve.ScalarBaseMult(privateKey)
-	
+
 		return priv, nil
 
 	}
